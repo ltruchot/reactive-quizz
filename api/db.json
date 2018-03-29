@@ -1,0 +1,16 @@
+{
+  "items": [
+    {
+      "id": 0,
+      "reversible": false,
+      "q": {
+        "fr": "Quelle est la distance Terre-Lune ?",
+        "en": "What is the Earth-Moon distance ?"
+      },
+      "a": {        
+        "en": "384 400 km"
+      },
+      "b": [{ "en": "521 200 km"}, { "en": "25 100 km" }, { "en": "112 500 km" }]
+    }
+  ]
+}

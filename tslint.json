@@ -1,0 +1,24 @@
+{
+  "extends": [
+    "tslint:recommended"
+  ],
+  "rules": {
+    "max-classes-per-file": [true, 1],
+    "ordered-imports": [
+      true,
+      {
+        "import-sources-order": "any",
+        "named-imports-order": "lowercase-last"
+      }
+    ],
+    // "space-before-function-paren": ["error", { 
+    //   "method": "always", 
+    //   "constructor": "always", 
+    //   "asyncArrow": "always",
+    //   "anonymous": "always", 
+    //   "named": "always"
+    // }],
+    "trailing-comma": [true, {"multiline": "never", "singleline": "never"}],
+    "typedef": [true, "call-signature", "parameter"]
+  }
+}
