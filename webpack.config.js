@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
 const jsonServer = require('json-server');
 
 module.exports = {
@@ -14,7 +15,7 @@ module.exports = {
     contentBase: './dist',
     hot: true,
     port: 8080,
-    setup: function(app) {
+    before: function(app) {
       app.use('/api', jsonServer.router('./api/db.json'));
     }
   },
@@ -23,7 +24,10 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: 'Development'
     }),
-    new CopyWebpackPlugin([{ from: './src/assets', to: 'assets' }]),
+    new HtmlWebpackIncludeAssetsPlugin({
+      assets: 'css/bootstrap.min.css', append: true 
+    }),
+    new CopyWebpackPlugin([{ from: './src/assets', to: 'assets' }, { from: './node_modules/bootstrap/dist/css', to: 'css'},]),
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin()
   ],

@@ -1,16 +1,63 @@
 {
-  "items": [
-    {
-      "id": 0,
-      "reversible": false,
+  "quizzs": [{
+    "id": 0,
+    "name": { "en": "Distances" },
+    "reversible": false,
+    "languages": ["fr", "en"],
+    "defaultLang": "en",
+    "items": [{
+      "id": 0,      
       "q": {
         "fr": "Quelle est la distance Terre-Lune ?",
         "en": "What is the Earth-Moon distance ?"
       },
       "a": {        
-        "en": "384 400 km"
+        "fr": "384 400 km"
       },
-      "b": [{ "en": "521 200 km"}, { "en": "25 100 km" }, { "en": "112 500 km" }]
-    }
-  ]
+      "b": [{ "fr": "521 200 km"}, { "fr": "25 100 km" }, { "fr": "112 500 km" }]
+    }]
+  }, {
+    "id": 1,
+    "name": { "en": "Tableau périodique des élements" },
+    "reversible": true,
+    "languages": ["fr", "en"],
+    "defaultLang": "en",
+    "items": [{
+      "id": 0,
+      "q": {
+        "fr": "Hydrogène",
+        "en": "Hydrogen"
+      },
+      "a": {
+        "en": "H"
+      }
+    }, {
+      "id": 1,
+      "q": {
+        "fr": "Hélium",
+        "en": "Helium"
+      },
+      "a": {
+        "en": "He"
+      }
+    }, {
+      "id": 2,
+      "q": {
+        "fr": "Lithium",
+        "en": "Helium"
+      },
+      "a": {
+        "en": "Li"
+      }
+    }, {
+      "id": 3,
+      "q": {
+        "fr": "Béryllium",
+        "en": "Beryllium"
+      },
+      "a": {
+        "en": "Be"
+      }
+    }]
+  }]
 }

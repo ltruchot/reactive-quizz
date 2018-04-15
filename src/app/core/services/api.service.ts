@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs/Observable';
+import { map } from 'rxjs/operators';
 export const apiService = {
-  get(url: string) {
+  get<T>(url: string): Observable<T> {
     return Observable.create((observer: any) => {
       const req = new XMLHttpRequest();
       req.open('GET', url);
@@ -16,6 +17,6 @@ export const apiService = {
         observer.error(new Error('An error occured'));
       };
       req.send();
-    });
+    }).pipe(map(JSON.parse as any)); // convert response to json
   }
 };
