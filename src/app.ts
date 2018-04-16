@@ -6,35 +6,53 @@ import { fromEvent } from 'rxjs/observable/fromEvent';
 import { apiService } from '@app/core/services/api.service';
 import { domService } from '@app/core/services/dom.service';
 // models
-import { IQuizzGame, IQuizz, IQuizzItem } from '@models/quizz.model';
+import {
+  IQuizzGame,
+  IQuizz,
+  IQuizzItem,
+  IQuizzData,
+  IQuizzComponent
+} from '@models/quizz.model';
 import { randomService } from '@app/core/services/random.service';
+import { Subject } from 'rxjs/Subject';
 
 // create dom containers for quizz
 const body: HTMLBodyElement = document.body as HTMLBodyElement;
 const container: HTMLDivElement = domService.createContainer();
 const title: HTMLHeadingElement = domService.createTitle('Choose a Quizz...');
 const rowTitle: HTMLDivElement = domService.createRow();
-const rowQ: HTMLDivElement = domService.createRow();
-const rowA: HTMLDivElement = domService.createRow();
 const nav: HTMLElement = domService.createNav();
+
+const quizzComponent: IQuizzComponent = {
+  rowQ: domService.createRow(),
+  rowA: domService.createRow(),
+  displayItem(item: IQuizzItem) {
+    quizzComponent.rowQ.innerText = item.q['fr'];
+  },
+  toggleBtn(btn: HTMLButtonElement, isExact: boolean) {
+    btn.classList.add(isExact ? 'btn-success' : 'btn-danger');
+  }
+};
 container.appendChild(nav);
 rowTitle.appendChild(title);
 container.appendChild(rowTitle);
-container.appendChild(rowQ);
-container.appendChild(rowA);
+container.appendChild(quizzComponent.rowQ);
+container.appendChild(quizzComponent.rowA);
 body.appendChild(container);
 
-// full quizz game object
-const quizzGame: IQuizzGame = {
+const quizzData: IQuizzData = {
   // values
   config: {
     speed: 1000,
-    qLang: 'fr',
-    aLang: 'fr',
+    language: 'fr',
     itemsNbr: 4
   },
-  currentItem: null,
+  // subjects
+  currentItemSubject$: new Subject()
+};
 
+// full quizz game object
+const quizzGame: IQuizzGame = {
   // observables
   currentQuizzId$: fromEvent(nav, 'click').pipe(
     map((event: MouseEvent) => {
@@ -43,20 +61,28 @@ const quizzGame: IQuizzGame = {
     }), // return only id of clicked quizz name
     distinctUntilChanged() // continue only id it is different from previous
   ),
-  choice$: fromEvent(rowA, 'click').pipe(
-    map((event: MouseEvent) => +(event.target as HTMLButtonElement).dataset.id)
+
+  clickedChoice$: fromEvent(quizzComponent.rowA, 'click').pipe(
+    combineLatest(quizzData.currentItemSubject$),
+    tap(([event, item]: [MouseEvent, IQuizzItem]) => {
+      const btn = event.target as HTMLButtonElement;
+      const id = +btn.dataset.id;
+      quizzComponent.toggleBtn(btn, id === item.id);
+    })
   ),
-  ticks$: null,
+  ticks$: interval(quizzData.config.speed),
 
   // methods
   launch() {
-    this.choice$.subscribe((id: number) => {
-      if (this.currentItem.id === id) {
-        console.log('bravo');
-      } else {
-        console.log('hell no !');
-      }
-    });
+    // subscribe to user click event
+    this.clickedChoice$.subscribe();
+
+    // subscribe to current item change
+    quizzData.currentItemSubject$
+      .pipe(tap(quizzComponent.displayItem))
+      .subscribe();
+
+    // subscribe to every quizzes from db
     apiService
       .get<IQuizz[]>('http://localhost:8080/api/quizzs') // get quizzes from db
       .pipe(
@@ -67,16 +93,15 @@ const quizzGame: IQuizzGame = {
         ), // return the chose quizz
         tap(this.fillQuizz.bind(this))
       )
-      .subscribe(); // auto subscribe
-    this.ticks = interval(this.config.speed);
-    //this.nextItem(this.currentQuizz[0]);
+      .subscribe(); // auto
   },
+
   createNavButtons(quizzes: IQuizz[]) {
     quizzes.forEach(quizz => {
-      if (quizz.items.length >= this.config.itemsNbr) {
+      if (quizz.items.length >= quizzData.config.itemsNbr) {
         nav.appendChild(
           domService.createLink(
-            quizz.name.en,
+            quizz.name['fr'],
             { id: quizz.id + '' },
             { href: '/' + quizz.id }
           )
@@ -85,27 +110,27 @@ const quizzGame: IQuizzGame = {
     });
   },
   fillQuizz(quizz: IQuizz) {
-    title.innerText = 'Current quizz: ' + quizz.name.en;
     const quizzItems: IQuizzItem[] = quizz.items;
     const defaultLang = quizz.defaultLang;
-    this.currentItem = randomService.getRandomInArray(quizzItems);
-    rowQ.innerText =
-      this.currentItem.q[this.config.qLang] || this.currentItem.q[defaultLang];
+
+    title.innerText = 'Current quizz: ' + quizz.name['fr'];
+    quizzData.currentItemSubject$.next(
+      randomService.getRandomInArray(quizzItems)
+    );
+
     // clean previous answer buttons
-    while (rowA.firstChild) {
-      rowA.removeChild(rowA.firstChild);
-    }
+    domService.emptyBlock(quizzComponent.rowA);
+
     // create new answer buttons
-    this.currentAnswer =
-      this.currentItem.a[this.config.aLang] || this.currentItem.a[defaultLang];
     for (let i = 0; i < 4; i++) {
       const btnAnswer = domService.createButton(
-        quizzItems[i].a[this.config.aLang] || quizzItems[i].a[defaultLang],
+        quizzItems[i].a[quizzData.config.language] ||
+          quizzItems[i].a[defaultLang],
         {
           id: quizzItems[i].id + ''
         }
       );
-      rowA.appendChild(btnAnswer);
+      quizzComponent.rowA.appendChild(btnAnswer);
     }
   }
 };

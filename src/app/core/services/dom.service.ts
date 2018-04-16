@@ -65,6 +65,11 @@ export const domService = {
       block.setAttribute(key, data[key]);
     }
     return block;
+  },
+  emptyBlock(block: HTMLElement): void {
+    while (block.firstChild) {
+      block.removeChild(block.firstChild);
+    }
   }
 };
 

@@ -1,12 +1,26 @@
 import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
+
+export interface IQuizzComponent {
+  rowQ: HTMLDivElement;
+  rowA: HTMLDivElement;
+  displayItem: (item: IQuizzItem) => void;
+  toggleBtn: (btn: HTMLButtonElement, isExact: boolean) => void;
+}
+
+export interface IQuizzData {
+  // values
+  config: IQuizzConfig;
+  // subjects
+  currentItemSubject$: Subject<IQuizzItem>;
+}
 
 export interface IQuizzGame {
-  config: IQuizzConfig;
-  currentItem: IQuizzItem;
   // observables
   currentQuizzId$: Observable<any>;
-  choice$: Observable<number>;
+  clickedChoice$: Observable<any>;
   ticks$: Observable<number>;
+  // methods
   launch: () => void;
   createNavButtons: (quizzes: IQuizz[]) => void;
   fillQuizz: (quizz: IQuizz) => void;
@@ -14,8 +28,7 @@ export interface IQuizzGame {
 
 interface IQuizzConfig {
   speed: number;
-  qLang: IAvailableLangs;
-  aLang: IAvailableLangs;
+  language: IAvailableLangs;
   itemsNbr: number;
 }
 
