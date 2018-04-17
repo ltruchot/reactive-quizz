@@ -2,25 +2,44 @@
   "quizzs": [{
     "id": 0,
     "name": { "fr": "Distances" },
-    "reversible": false,
     "languages": ["fr"],
-    "defaultLang": "fr",
     "items": [{
       "id": 0,      
       "q": {
-        "fr": "Quelle est la distance Terre-Lune ?"
+        "fr": "Quelle est la distance Terre-Lune moyenne ?"
       },
       "a": {        
         "fr": "384 400 km"
+      }
+    }, {
+      "id": 1,      
+      "q": {
+        "fr": "Quelle est la taille du rayon de la terre ?"
       },
-      "b": [{ "fr": "521 200 km"}, { "fr": "25 100 km" }, { "fr": "112 500 km" }]
+      "a": {        
+        "fr": "6 371 km"
+      }
+    }, {
+      "id": 2,      
+      "q": {
+        "fr": "Quelle est la taille de la ciconférence de la terre ?"
+      },
+      "a": {        
+        "fr": "40 075 km"
+      }
+    }, {
+      "id": 3,      
+      "q": {
+        "fr": "Quelle est la distance Terre-Mars moyenne ?"
+      },
+      "a": {        
+        "fr": "75 300 000 km"
+      }
     }]
   }, {
     "id": 1,
     "name": { "fr": "Tableau périodique des élements" },
-    "reversible": true,
     "languages": ["fr"],
-    "defaultLang": "fr",
     "items": [{
       "id": 0,
       "q": {
@@ -52,6 +71,38 @@
       },
       "a": {
         "fr": "Be"
+      }
+    }, {
+      "id": 4,
+      "q": {
+        "fr": "Bore"
+      },
+      "a": {
+        "fr": "B"
+      }
+    }, {
+      "id": 5,
+      "q": {
+        "fr": "Carbone"
+      },
+      "a": {
+        "fr": "C"
+      }
+    }, {
+      "id": 5,
+      "q": {
+        "fr": "Azote"
+      },
+      "a": {
+        "fr": "N"
+      }
+    }, {
+      "id": 5,
+      "q": {
+        "fr": "Oxygène"
+      },
+      "a": {
+        "fr": "O"
       }
     }]
   }]

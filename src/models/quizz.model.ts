@@ -4,15 +4,23 @@ import { Subject } from 'rxjs/Subject';
 export interface IQuizzComponent {
   rowQ: HTMLDivElement;
   rowA: HTMLDivElement;
-  displayItem: (item: IQuizzItem) => void;
-  toggleBtn: (btn: HTMLButtonElement, isExact: boolean) => void;
+  nav: HTMLElement;
+  choiceBtns: HTMLButtonElement[];
+  create: () => void;
+  toggleBtns: (btn: HTMLButtonElement, isExact: boolean) => void;
+  createNavButtons: (quizzes: IQuizz[]) => void;
+  fillQuizz: (quizz: IQuizz) => void;
+  fillAnswers: (items: IQuizzItem[]) => void;
+  fillItem: (item: IQuizzItem) => void;
 }
 
 export interface IQuizzData {
   // values
   config: IQuizzConfig;
   // subjects
-  currentItemSubject$: Subject<IQuizzItem>;
+  quizzSubject$: Subject<IQuizz>;
+  itemSubject$: Subject<IQuizzItem>;
+  answersSubject$: Subject<IQuizzItem[]>;
 }
 
 export interface IQuizzGame {
@@ -22,8 +30,7 @@ export interface IQuizzGame {
   ticks$: Observable<number>;
   // methods
   launch: () => void;
-  createNavButtons: (quizzes: IQuizz[]) => void;
-  fillQuizz: (quizz: IQuizz) => void;
+  nextQuestion: (items: IQuizzItem[]) => void;
 }
 
 interface IQuizzConfig {
@@ -37,20 +44,17 @@ export interface IQuizz {
   name: ILangItem;
   reversible: boolean;
   languages: IAvailableLangs[];
-  defaultLang: IAvailableLangs;
   items: IQuizzItem[];
 }
 
 export interface IQuizzItem {
   id: number;
   reversible: boolean;
-  defaultLang: IAvailableLangs;
   q: ILangItem;
   a: ILangItem;
 }
 interface ILangItem {
   fr?: string;
   en?: string;
-  [s: string]: string;
 }
 type IAvailableLangs = 'fr' | 'en';
