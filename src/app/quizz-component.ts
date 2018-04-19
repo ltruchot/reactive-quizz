@@ -1,6 +1,10 @@
 import { domService } from '@app/core/services/dom.service';
-import { IQuizzComponent, IQuizz, IQuizzItem } from '@models/quizz.model';
-import { quizzData } from '@app/quizz-data';
+import {
+  IQuizzComponent,
+  IQuizz,
+  IQuizzItem,
+  IQuizzConfig
+} from '@models/quizz.model';
 
 // create dom containers for quizz
 const body: HTMLBodyElement = document.body as HTMLBodyElement;
@@ -42,9 +46,9 @@ export const quizzComponent: IQuizzComponent = {
   fillItem(item: IQuizzItem) {
     quizzComponent.rowQ.innerText = item.q['fr'];
   },
-  createNavButtons(quizzes: IQuizz[]) {
+  createNavButtons([quizzes, config]: [IQuizz[], IQuizzConfig]) {
     quizzes.forEach(quizz => {
-      if (quizz.items.length >= quizzData.config.itemsNbr) {
+      if (quizz.items.length >= config.itemsNbr) {
         this.nav.appendChild(
           domService.createLink(
             quizz.name['fr'],

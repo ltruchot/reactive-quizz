@@ -1,14 +1,14 @@
 import { IQuizzData } from '@models/quizz.model';
 import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { IQuizzConfig } from '@models/quizz.model';
 
 export const quizzData: IQuizzData = {
-  // values
-  config: {
+  configSubject$: new BehaviorSubject<IQuizzConfig>({
     speed: 1000,
     language: 'fr',
     itemsNbr: 4
-  },
-  // subjects
+  }),
   quizzSubject$: new Subject(),
   itemSubject$: new Subject(),
   answersSubject$: new Subject()
