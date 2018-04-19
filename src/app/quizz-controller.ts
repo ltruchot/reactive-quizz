@@ -18,7 +18,8 @@ import {
   IQuizz,
   IQuizzItem,
   IQuizzConfig,
-  IQuizzGame
+  IQuizzGame,
+  INextQuestionInfos
 } from '@models/quizz.model';
 // values
 import { quizzData } from '@app/quizz-data';
@@ -26,11 +27,29 @@ import { quizzComponent, quizzDom } from '@app/quizz-component';
 
 const quizzGame: IQuizzGame = {
   // methods
-  nextQuestion({ items, config }) {
-    const answers = randomService.getRandomsInArray(items, config.itemsNbr);
-    const item = randomService.getRandomInArray(answers);
-    quizzData.itemSubject$.next(item);
-    quizzData.answersSubject$.next(answers);
+  nextQuestion({ leftItems, allItems, config }) {
+    // append only if still question left, else, end of current quizz
+    if (leftItems.length) {
+      // select a random right answer
+      const rightAnswer = randomService.getRandomInArray(leftItems);
+
+      // exclude right answer from possible wrong answers & get n wrong answer
+      allItems = [...allItems.filter(item => item !== rightAnswer)];
+      const wrongAnswers = randomService.getRandomsInArray(
+        allItems,
+        config.itemsNbr - 1
+      );
+
+      // stream those new values
+      quizzData.itemSubject$.next(rightAnswer);
+      quizzData.answersSubject$.next(wrongAnswers.concat(rightAnswer));
+
+      // stream item lefts for next questions (prevent re-pick same question)
+      leftItems = [...leftItems.filter(item => item !== rightAnswer)];
+      quizzData.leftItemsSubject$.next(leftItems);
+    } else {
+      console.log('end game !');
+    }
   }
 };
 
@@ -38,26 +57,41 @@ const quizzGame: IQuizzGame = {
 export const quizzController: IQuizzController = {
   // observables
   clickedQuizz$: rxjsService.delegate(quizzDom.nav, 'click', 'nav-link').pipe(
+    // return only id of clicked quizz name
     map((event: MouseEvent) => {
       event.preventDefault();
       return (event.target as HTMLLinkElement).dataset.id;
-    }), // return only id of clicked quizz name
-    distinctUntilChanged() // continue only id it is different from previous
+    }),
+
+    // continue only id it is different from previous
+    distinctUntilChanged()
   ),
 
   clickedItem$: rxjsService.delegate(quizzDom.rowA, 'click', 'btn').pipe(
-    withLatestFrom(quizzData.itemSubject$), // get lastest
-    map(([event, item]: [MouseEvent, IQuizzItem]) => {
+    // get lastest rightAnwser value
+    withLatestFrom(quizzData.itemSubject$, quizzData.playerScoreSubject$),
+    map(([event, item, score]: [MouseEvent, IQuizzItem, number]) => {
       const btn = event.target as HTMLButtonElement;
       const id = +btn.dataset.id;
-      quizzComponent.toggleBtns(btn, id === item.id);
+      const rightAnswered = id === item.id;
+      quizzComponent.toggleBtns(btn, rightAnswered);
+      // stream new player score
+      if (rightAnswered) {
+        quizzData.playerScoreSubject$.next(++score);
+      }
       return item;
     }),
     delay(1000),
     withLatestFrom(
+      quizzData.leftItemsSubject$,
       quizzData.quizzSubject$,
       quizzData.configSubject$,
-      (_item, quizz, config) => ({ items: quizz.items, config })
+      (_item, leftItems, quizz, config) =>
+        ({
+          leftItems,
+          allItems: quizz.items,
+          config
+        } as INextQuestionInfos)
     ),
     tap(quizzGame.nextQuestion)
   ),
@@ -69,14 +103,29 @@ export const quizzController: IQuizzController = {
     // subscribe to user click event
     this.clickedItem$.subscribe();
 
+    // subscribe to player score
+    quizzData.playerScoreSubject$
+      .pipe(
+        withLatestFrom(quizzData.quizzSubject$, (currentScore, quizz) => ({
+          currentScore,
+          questionsNbr: quizz.items.length
+        })),
+        tap(quizzComponent.refreshScore)
+      )
+      .subscribe();
+
     // subscribe to current quizz change
     quizzData.quizzSubject$
       .pipe(
         tap(quizzComponent.fillQuizz),
-        withLatestFrom(quizzData.configSubject$, (quizz, config) => ({
-          items: quizz.items,
-          config
-        })),
+        withLatestFrom(quizzData.configSubject$, (quizz, config) => {
+          quizzData.leftItemsSubject$.next(quizz.items);
+          return {
+            leftItems: quizz.items,
+            allItems: quizz.items,
+            config
+          } as INextQuestionInfos;
+        }),
         tap(quizzGame.nextQuestion)
       )
       .subscribe();
@@ -94,14 +143,15 @@ export const quizzController: IQuizzController = {
         withLatestFrom(quizzData.configSubject$),
         tap(quizzComponent.createNavButtons.bind(quizzComponent)), // create dom nav menu buttons
         map(([quizzes, _config]: [IQuizz[], IQuizzConfig]) => quizzes),
-        combineLatest(this.clickedQuizz$), // new quizz id re-triggering
+        combineLatest(this.clickedQuizz$), // new quizz id re-triggered on click
         tap(([quizzes, currentId]: [IQuizz[], string]) => {
           const quizz = quizzes.find(
             quizz => quizz.id === (currentId ? +currentId : 0)
           );
-          quizzData.quizzSubject$.next(quizz);
-        }) // return the chose quizz
+          quizzData.quizzSubject$.next(quizz); // next quizz change action
+        }),
+        tap(() => quizzData.playerScoreSubject$.next(0))
       )
-      .subscribe(); // auto
+      .subscribe();
   }
 };

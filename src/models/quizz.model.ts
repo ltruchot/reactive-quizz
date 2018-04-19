@@ -3,14 +3,25 @@ import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 export interface IQuizzDom {
+  body: HTMLBodyElement;
+  container: HTMLDivElement;
+  rowTitle: HTMLDivElement;
+  title: HTMLHeadingElement;
   rowQ: HTMLDivElement;
   rowA: HTMLDivElement;
   nav: HTMLElement;
+  score: HTMLDivElement;
   choiceBtns: HTMLButtonElement[];
+}
+
+interface IScoreInfos {
+  currentScore: number;
+  questionsNbr: number;
 }
 export interface IQuizzComponent {
   create: () => void;
   toggleBtns: (btn: HTMLButtonElement, isExact: boolean) => void;
+  refreshScore: ({ currentScore, questionsNbr }: IScoreInfos) => void;
   createNavButtons: ([quizzes, config]: [IQuizz[], IQuizzConfig]) => void;
   fillQuizz: (quizz: IQuizz) => void;
   fillAnswers: (items: IQuizzItem[]) => void;
@@ -23,11 +34,16 @@ export interface IQuizzData {
   quizzSubject$: Subject<IQuizz>;
   itemSubject$: Subject<IQuizzItem>;
   answersSubject$: Subject<IQuizzItem[]>;
+  leftItemsSubject$: Subject<IQuizzItem[]>;
+  playerScoreSubject$: Subject<number>;
+}
+export interface INextQuestionInfos {
+  leftItems: IQuizzItem[];
+  allItems: IQuizzItem[];
+  config: IQuizzConfig;
 }
 export interface IQuizzGame {
-  nextQuestion: (
-    { items, config }: { items: IQuizzItem[]; config: IQuizzConfig }
-  ) => void;
+  nextQuestion: ({ leftItems, allItems, config }: INextQuestionInfos) => void;
 }
 export interface IQuizzController {
   // observables

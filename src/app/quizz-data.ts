@@ -11,5 +11,7 @@ export const quizzData: IQuizzData = {
   }),
   quizzSubject$: new Subject(),
   itemSubject$: new Subject(),
-  answersSubject$: new Subject()
+  answersSubject$: new Subject(),
+  leftItemsSubject$: new Subject(),
+  playerScoreSubject$: new Subject()
 };

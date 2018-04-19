@@ -8,26 +8,30 @@ import {
 } from '@models/quizz.model';
 
 // create dom containers for quizz
-const body: HTMLBodyElement = document.body as HTMLBodyElement;
-const container: HTMLDivElement = domService.createContainer();
-const title: HTMLHeadingElement = domService.createTitle('Choose a Quizz...');
-const rowTitle: HTMLDivElement = domService.createRow();
-
 export const quizzDom: IQuizzDom = {
+  body: document.body as HTMLBodyElement,
+  container: domService.createContainer(),
+  title: domService.createTitle('Choose a Quizz...'),
+  rowTitle: domService.createRow(),
   rowQ: domService.createRow(),
   rowA: domService.createRow(),
   nav: domService.createNav(),
+  score: domService.createRow(),
   choiceBtns: []
 };
 
 export const quizzComponent: IQuizzComponent = {
   create() {
-    container.appendChild(quizzDom.nav);
-    rowTitle.appendChild(title);
-    container.appendChild(rowTitle);
-    container.appendChild(quizzDom.rowQ);
-    container.appendChild(quizzDom.rowA);
-    body.appendChild(container);
+    quizzDom.container.appendChild(quizzDom.nav);
+    quizzDom.rowTitle.appendChild(quizzDom.title);
+    quizzDom.container.appendChild(quizzDom.rowTitle);
+    quizzDom.container.appendChild(quizzDom.rowQ);
+    quizzDom.container.appendChild(quizzDom.rowA);
+    quizzDom.container.appendChild(quizzDom.score);
+    quizzDom.body.appendChild(quizzDom.container);
+  },
+  refreshScore: ({ currentScore, questionsNbr }) => {
+    quizzDom.score.innerHTML = `Score: ${currentScore} / ${questionsNbr}`;
   },
   toggleBtns(btn: HTMLButtonElement, isExact: boolean) {
     quizzDom.choiceBtns.forEach(
@@ -36,7 +40,7 @@ export const quizzComponent: IQuizzComponent = {
     btn.classList.add(isExact ? 'btn-success' : 'btn-danger');
   },
   fillQuizz(quizz: IQuizz) {
-    title.innerText = 'Current quizz: ' + quizz.name['fr'];
+    quizzDom.title.innerText = 'Current quizz: ' + quizz.name['fr'];
   },
   fillAnswers(items: IQuizzItem[]) {
     // clean previous answer buttons
