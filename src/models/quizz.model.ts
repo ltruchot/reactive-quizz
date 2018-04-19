@@ -2,11 +2,13 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-export interface IQuizzComponent {
+export interface IQuizzDom {
   rowQ: HTMLDivElement;
   rowA: HTMLDivElement;
   nav: HTMLElement;
   choiceBtns: HTMLButtonElement[];
+}
+export interface IQuizzComponent {
   create: () => void;
   toggleBtns: (btn: HTMLButtonElement, isExact: boolean) => void;
   createNavButtons: ([quizzes, config]: [IQuizz[], IQuizzConfig]) => void;

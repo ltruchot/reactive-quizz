@@ -22,7 +22,7 @@ import {
 } from '@models/quizz.model';
 // values
 import { quizzData } from '@app/quizz-data';
-import { quizzComponent } from '@app/quizz-component';
+import { quizzComponent, quizzDom } from '@app/quizz-component';
 
 const quizzGame: IQuizzGame = {
   // methods
@@ -37,17 +37,15 @@ const quizzGame: IQuizzGame = {
 // full quizz game object
 export const quizzController: IQuizzController = {
   // observables
-  clickedQuizz$: rxjsService
-    .delegate(quizzComponent.nav, 'click', 'nav-link')
-    .pipe(
-      map((event: MouseEvent) => {
-        event.preventDefault();
-        return (event.target as HTMLLinkElement).dataset.id;
-      }), // return only id of clicked quizz name
-      distinctUntilChanged() // continue only id it is different from previous
-    ),
+  clickedQuizz$: rxjsService.delegate(quizzDom.nav, 'click', 'nav-link').pipe(
+    map((event: MouseEvent) => {
+      event.preventDefault();
+      return (event.target as HTMLLinkElement).dataset.id;
+    }), // return only id of clicked quizz name
+    distinctUntilChanged() // continue only id it is different from previous
+  ),
 
-  clickedItem$: rxjsService.delegate(quizzComponent.rowA, 'click', 'btn').pipe(
+  clickedItem$: rxjsService.delegate(quizzDom.rowA, 'click', 'btn').pipe(
     withLatestFrom(quizzData.itemSubject$), // get lastest
     map(([event, item]: [MouseEvent, IQuizzItem]) => {
       const btn = event.target as HTMLButtonElement;
@@ -65,7 +63,9 @@ export const quizzController: IQuizzController = {
   ),
 
   launch() {
+    // dom component creation
     quizzComponent.create();
+
     // subscribe to user click event
     this.clickedItem$.subscribe();
 
@@ -82,15 +82,12 @@ export const quizzController: IQuizzController = {
       .subscribe();
 
     // subscribe to current item changes
-    quizzData.itemSubject$
-      .pipe(tap(quizzComponent.fillItem.bind(quizzComponent)))
-      .subscribe();
+    quizzData.itemSubject$.pipe(tap(quizzComponent.fillItem)).subscribe();
 
     // subscribe to displayed answers changes
-    quizzData.answersSubject$
-      .pipe(tap(quizzComponent.fillAnswers.bind(quizzComponent)))
-      .subscribe();
-    // subscribe to every quizzes from db
+    quizzData.answersSubject$.pipe(tap(quizzComponent.fillAnswers)).subscribe();
+
+    // get every quizzes from db
     apiService
       .get<IQuizz[]>('http://localhost:8080/api/quizzs') // get quizzes from db
       .pipe(
