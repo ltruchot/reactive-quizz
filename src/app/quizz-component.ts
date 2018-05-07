@@ -4,7 +4,8 @@ import {
   IQuizz,
   IQuizzItem,
   IQuizzConfig,
-  IQuizzDom
+  IQuizzDom,
+  IScoreInfos
 } from '@models/quizz.model';
 
 // create dom containers for quizz
@@ -30,32 +31,43 @@ export const quizzComponent: IQuizzComponent = {
     quizzDom.container.appendChild(quizzDom.score);
     quizzDom.body.appendChild(quizzDom.container);
   },
-  refreshScore: ({ currentScore, questionsNbr }) => {
+  displayGameOver: ({ currentScore, questionsNbr }: IScoreInfos) => {
+    console.log('displayGameover', currentScore, questionsNbr);
+  },
+  refreshScore: ({ currentScore, questionsNbr }: IScoreInfos) => {
     quizzDom.score.innerHTML = `Score: ${currentScore} / ${questionsNbr}`;
   },
+
   toggleBtns(btn: HTMLButtonElement, isExact: boolean) {
     quizzDom.choiceBtns.forEach(
       (btn: HTMLButtonElement) => (btn.disabled = true)
     );
     btn.classList.add(isExact ? 'btn-success' : 'btn-danger');
   },
+
   fillQuizz(quizz: IQuizz) {
     quizzDom.title.innerText = 'Current quizz: ' + quizz.name['fr'];
   },
+
   fillAnswers(items: IQuizzItem[]) {
     // clean previous answer buttons
     domService.emptyBlock(quizzDom.rowA);
     items.forEach(item => {
-      const btnAnswer = domService.createButton(item.a['fr'], {
+      const btnAnswer = domService.createButtonBlock(item.a['fr'], {
         id: item.id + ''
       });
       quizzDom.choiceBtns.push(btnAnswer);
-      quizzDom.rowA.appendChild(btnAnswer);
+      const col = domService.createCol(6, { xl: 3 });
+      col.classList.add('p-1');
+      col.appendChild(btnAnswer);
+      quizzDom.rowA.appendChild(col);
     });
   },
+
   fillItem(item: IQuizzItem) {
     quizzDom.rowQ.innerText = item.q['fr'];
   },
+
   createNavButtons([quizzes, config]: [IQuizz[], IQuizzConfig]) {
     quizzes.forEach(quizz => {
       if (quizz.items.length >= config.itemsNbr) {

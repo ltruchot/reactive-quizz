@@ -1,8 +1,20 @@
 {
   "name": "reactive-quizz",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "a fully reactive quizz written in typescript",
+  "engines": {
+    "node": "~8.11.0",
+    "npm": "~5.8.0"
+  },
   "main": "./src/app.ts",
+  "keywords": [
+    "quizz",
+    "rxjs",
+    "reactive",
+    "webpack",
+    "typescript",
+    "observable"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "npm-reset": "rm -rf node_modules && npm cache verify && npm i",
@@ -38,7 +50,7 @@
     "webpack-dev-server": "3.1.1"
   },
   "dependencies": {
-    "bootstrap": "4.0.0",
+    "bootstrap": "4.1.0",
     "rxjs": "5.5.8"
   }
 }

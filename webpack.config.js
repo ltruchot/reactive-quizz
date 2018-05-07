@@ -25,7 +25,7 @@ module.exports = {
       title: 'Development'
     }),
     new HtmlWebpackIncludeAssetsPlugin({
-      assets: 'css/bootstrap.min.css', append: true 
+      assets: ['css/bootstrap.min.css'], append: true 
     }),
     new CopyWebpackPlugin([{ from: './src/assets', to: 'assets' }, { from: './node_modules/bootstrap/dist/css', to: 'css'},]),
     new webpack.NamedModulesPlugin(),

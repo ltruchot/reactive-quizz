@@ -5,15 +5,16 @@ A typescript quizz module in RxJS.
 ## Launch it
 
 Prerequisite:
-* install node > 8.10.0 && npm > 5.8.0 (`npm i -g npm`)
+* install node > 8.11.0 && npm > 5.8.0 (`npm i -g npm`)
 * run `npm i` before first start
 
 Run (dev): `npm start` then browse http://localhost:4200/ with Firefox or Chrome
+
 Build (prod): `npm run build` then use freshly generated "dist" 
 
 ## More infos
 
-Current version: Release v0.0.1
+Current version: Release v0.1.0
 
 Last NPM full update: 2018-03-29
 

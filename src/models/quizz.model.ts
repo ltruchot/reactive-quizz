@@ -14,13 +14,14 @@ export interface IQuizzDom {
   choiceBtns: HTMLButtonElement[];
 }
 
-interface IScoreInfos {
+export interface IScoreInfos {
   currentScore: number;
   questionsNbr: number;
 }
 export interface IQuizzComponent {
   create: () => void;
   toggleBtns: (btn: HTMLButtonElement, isExact: boolean) => void;
+  displayGameOver: ({ currentScore, questionsNbr }: IScoreInfos) => void;
   refreshScore: ({ currentScore, questionsNbr }: IScoreInfos) => void;
   createNavButtons: ([quizzes, config]: [IQuizz[], IQuizzConfig]) => void;
   fillQuizz: (quizz: IQuizz) => void;

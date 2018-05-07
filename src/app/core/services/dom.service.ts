@@ -39,14 +39,24 @@ export const domService = {
     });
     return row;
   },
-  createButton(content: string, data: IObject): HTMLButtonElement {
+
+  createCol(base: number, { xl }: { xl: number }): HTMLDivElement {
+    const classXl = xl ? ' col-xl-' + xl : '';
+    const col: HTMLDivElement = this.createEl('div', {
+      className: 'col' + '-' + base + classXl
+    });
+    return col;
+  },
+
+  createButtonBlock(content: string, data: IObject): HTMLButtonElement {
     const btn: HTMLButtonElement = this.createEl('button', {
-      className: 'btn',
+      className: 'btn btn-lg btn-block',
       content,
       data
     });
     return btn;
   },
+
   createEl(
     elType: string,
     { className, content, data, attr }: blockConfig
@@ -66,6 +76,7 @@ export const domService = {
     }
     return block;
   },
+
   emptyBlock(block: HTMLElement): void {
     while (block.firstChild) {
       block.removeChild(block.firstChild);

@@ -141,14 +141,18 @@ export const quizzController: IQuizzController = {
       .get<IQuizz[]>('http://localhost:8080/api/quizzs') // get quizzes from db
       .pipe(
         withLatestFrom(quizzData.configSubject$),
-        tap(quizzComponent.createNavButtons.bind(quizzComponent)), // create dom nav menu buttons
+        // create dom nav menu buttons
+        tap(quizzComponent.createNavButtons),
         map(([quizzes, _config]: [IQuizz[], IQuizzConfig]) => quizzes),
-        combineLatest(this.clickedQuizz$), // new quizz id re-triggered on click
+        // new quizz id re-triggered on click
+        combineLatest(this.clickedQuizz$),
         tap(([quizzes, currentId]: [IQuizz[], string]) => {
           const quizz = quizzes.find(
             quizz => quizz.id === (currentId ? +currentId : 0)
           );
-          quizzData.quizzSubject$.next(quizz); // next quizz change action
+
+          // next quizz change action
+          quizzData.quizzSubject$.next(quizz);
         }),
         tap(() => quizzData.playerScoreSubject$.next(0))
       )
